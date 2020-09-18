@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Usuario } from 'src/app/models/usuario';
 import { map } from 'rxjs/operators';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,14 @@ import { map } from 'rxjs/operators';
 export class AuthService {
 
   private API = "http://localhost:3000/"
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private token: TokenService 
+    ) { }
 
+  sair(){
+    this.token.removerToken('usuario'); 
+  }
 
   autenticar(usuario: string, senha: string) {
     return this.http.get<Usuario>(this.API + 'usuario', {
@@ -20,7 +27,8 @@ export class AuthService {
       }
     }).pipe(
       map(res => {
-        localStorage.setItem('usuario', JSON.stringify(res))
+        //localStorage.setItem('usuario', JSON.stringify(res))
+        this.token.setarToken('usuario',JSON.stringify(res));
       })
     );
   }
